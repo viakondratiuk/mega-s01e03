@@ -1,0 +1,63 @@
+---
+layout: runbook
+title: '#4471 · three problems, not one'
+owner: Viacheslav Kondratiuk
+status: open
+reviewed: 2026-11-03
+signature: Viacheslav Kondratiuk
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+</script>
+
+[#4471](/kb/incidents/4471) is marked known: one issue, one fix queued. Its reports describe
+three problems. The queued parser fix closes one of them. Each problem now has its own ticket.
+
+<ProblemTable
+  ticket={4471}
+  tickets={{
+    parser: 'https://github.com/viakondratiuk/mega-s01e03/issues/1',
+    hint: 'https://github.com/viakondratiuk/mega-s01e03/issues/2',
+    'one-day move': 'https://github.com/viakondratiuk/mega-s01e03/issues/3',
+  }}
+/>
+
+## The three problems
+
+**`parser`: the shared parser reads every date month first.** Every tenant in #4471 writes the
+day first, so day and month swap. "Our 7 April reminder went out on 4 July." This is the bug
+#4471 names, and the queued fix is for it.
+
+**`hint`: booking-v3 asks for the month first.** Its date field prints `MM/DD/YYYY`. People type
+what the hint says, and the form reads the date the tenant's way, day first. The result looks
+like the parser bug, but the parser fix does not touch the hint. It comes only through the
+booking form of tenants on booking-v3.
+
+**`one-day move`: the date moves by one day, not by months.** "Invite says Tuesday 12 May.
+Calendar says Monday 11 May." "Client in Lisbon got Tuesday. Client in Toronto got Monday."
+A day/month swap cannot do that; a time zone or daylight-saving bug can. The desk noted these
+reports in `desk-notes.json`, but the kb counted them under `parser` by tenant.
+
+## Why one ticket hid three
+
+- [Decision 0001](/kb/decisions/0001-dedupe-by-subject) merges reports with the same subject.
+  All three problems arrive with the same subjects, such as "Wrong day on the invite" and
+  "Month and day swapped?", so all of them landed in #4471.
+- Intake tags come from the reporter's browser, not from the tenant. The "intake tagged as"
+  column shows how often they disagree with the problem.
+
+<Callout kind="warn">
+Do not close #4471, or the reports in it, when the parser fix ships. The <code>hint</code> and
+<code>one-day move</code> reports stay broken. Close each problem on its own ticket.
+</Callout>
+
+## How the split is made
+
+`src/lib/kb/problems.ts` places each report: a one-day move when the desk read it as one
+(`desk-notes.json`), otherwise its cause from `causes.ts`, by tenant and booking form. The table
+counts each report once (`uniqueById`), so it is rebuilt from data on every render.
+
+<RenderStamp {signature} />
