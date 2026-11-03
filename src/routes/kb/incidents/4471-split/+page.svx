@@ -39,7 +39,8 @@ booking form of tenants on booking-v3.
 **`one-day move`: the date moves by one day, not by months.** "Invite says Tuesday 12 May.
 Calendar says Monday 11 May." "Client in Lisbon got Tuesday. Client in Toronto got Monday."
 A day/month swap cannot do that; a time zone or daylight-saving bug can. The desk noted these
-reports in `desk-notes.json`, but the kb counted them under `parser` by tenant.
+reports in `desk-notes.json`. The table keeps them under `parser` too, where the desk filed them
+by tenant, so the parser count matches the desk's view.
 
 ## Why one ticket hid three
 
@@ -56,8 +57,8 @@ Do not close #4471, or the reports in it, when the parser fix ships. The <code>h
 
 ## How the split is made
 
-`src/lib/kb/problems.ts` places each report: a one-day move when the desk read it as one
-(`desk-notes.json`), otherwise its cause from `causes.ts`, by tenant and booking form. The table
-counts each report once (`uniqueById`), so it is rebuilt from data on every render.
+`src/lib/kb/problems.ts` counts the desk's way: each report once (`uniqueById`), under its cause
+from `causes.ts` by tenant and booking form, plus a row for the reports the desk read as a one-day
+move (`desk-notes.json`). The table is rebuilt from data on every render.
 
 <RenderStamp {signature} />

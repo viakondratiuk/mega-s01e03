@@ -2,14 +2,14 @@
   import reports from '#lib/data/reports-4471.json';
   import notes from '#lib/data/desk-notes.json';
   import { uniqueById, type Report } from '#lib/kb/causes';
-  import { groupByProblem, type Problem } from '#lib/kb/problems';
+  import { problemRows, type Problem } from '#lib/kb/problems';
   import { tenantOf } from '#lib/kb/locales';
 
   // tickets: problem → the ticket filed for it.
   let { ticket, tickets }: { ticket: number; tickets: Partial<Record<Problem, string>> } = $props();
 
   const merged = $derived(uniqueById(reports as Report[]).filter((r) => r.mergedInto === ticket));
-  const groups = $derived(groupByProblem(merged, tenantOf, notes.oneDayMove));
+  const groups = $derived(problemRows(merged, tenantOf, notes.oneDayMove));
   const tags = (g: { taggedAs: Record<string, number> }) =>
     Object.entries(g.taggedAs)
       .sort((a, b) => b[1] - a[1])
@@ -32,7 +32,7 @@
     {#each groups as g (g.problem)}
       <tr>
         <td><code>{g.problem}</code></td>
-        <td>{g.reports}</td>
+        <td>{g.reports}{#if g.alsoIn.length}{" · "}<span class="also">also counted under {g.alsoIn.join(', ')}</span>{/if}</td>
         <td>{g.tenants}</td>
         <td>{g.firstSeen} → {g.lastSeen}</td>
         <td class="tags">{tags(g)}</td>
@@ -47,5 +47,6 @@
 <style>
   .sum { font-size: 1.1rem; }
   .tags { color: var(--muted); font-size: 0.85em; }
+  .also { color: var(--muted); font-size: 0.85em; }
   .none { color: var(--warn); font-weight: 600; }
 </style>
