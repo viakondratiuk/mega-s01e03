@@ -4,7 +4,7 @@ title: '#4471 · three problems, not one'
 owner: Viacheslav Kondratiuk
 status: open
 reviewed: 2026-11-03
-signature: Viacheslav Kondratiuk
+signature: 'v1.eyJzdWIiOiI5NzQiLCJhdWQiOiJjaGFsbGVuZ2U6d2hhdC1pdC1zaG93cyIsImlhdCI6MTc5MzczNjI1MSwiZXhwIjoxNzkzODIyNjUxfQ.0LrkOLq1mvUFT3GL415R756TSgiVCP90Wxx_1At5D_Q'
 ---
 
 <script>
